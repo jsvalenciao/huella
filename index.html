@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propuesta Arquitectura Huella Inhouse | El Libertador</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .slide-enter { animation: slideIn 0.5s ease-out forwards; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .bolivar-green { color: #004A3B; }
+        .bg-bolivar-green { background-color: #004A3B; }
+        .bolivar-gold { color: #D4A056; }
+        .bg-bolivar-gold { background-color: #D4A056; }
+        .bolivar-gradient { background: linear-gradient(135deg, #004A3B 0%, #00382D 100%); }
+        .nav-item-active { border-bottom: 3px solid #D4A056; color: #004A3B; font-weight: 800; background-color: #f1f5f9; }
+        .architecture-node { transition: all 0.3s ease; cursor: default; }
+        .architecture-node:hover { transform: translateY(-3px); box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1); border-color: #D4A056; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; font-size: 24px;
+            line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block;
+            white-space: nowrap; word-wrap: normal; direction: ltr; -webkit-font-smoothing: antialiased;
+        }
+    </style>
+</head>
+<body class="antialiased text-slate-900">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const SlideLayout = ({ title, subtitle, children, currentStep, total, onNavClick }) => {
+            const sections = [
+                "Inicio", "Contexto Negocio", "Infra AS-IS", "Dolores y Deuda", 
+                "Servicios API", "Arquitectura TO-BE", "Motor OpenL", "Custodia O'Leary", "Roadmap"
+            ];
+            
+            return (
+                <div className="flex flex-col h-screen max-h-screen overflow-hidden">
+                    <header className="bg-white border-b border-slate-200 px-6 py-2 flex flex-col md:flex-row justify-between items-center shadow-sm z-50">
+                        <div className="flex items-center gap-4 mb-2 md:mb-0">
+                            <img src="SB Logo2.png" onError={(e) => { e.target.onerror = null; e.target.src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Logo_Seguros_Bol%C3%ADvar.svg/1200px-Logo_Seguros_Bol%C3%ADvar.svg.png"; }} className="h-10 w-auto" alt="Logo Seguros Bolívar" />
+                            <div className="h-8 w-[1px] bg-slate-200 hidden md:block"></div>
+                            <div className="hidden md:block">
+                                <h1 className="text-[10px] font-black text-[#004A3B] uppercase leading-none">Arquitectura</h1>
+                                <p className="text-xs font-extrabold text-[#D4A056] uppercase tracking-wider">Huella Inhouse</p>
+                            </div>
+                        </div>
+                        <nav className="flex items-center gap-1 overflow-x-auto max-w-full no-scrollbar px-2">
+                            {sections.map((sec, idx) => (
+                                <button key={idx} onClick={() => onNavClick(idx)} className={`px-3 py-2 text-[10px] uppercase tracking-widest font-bold transition-all whitespace-nowrap hover:text-[#004A3B] rounded-t-lg ${currentStep === idx ? 'nav-item-active' : 'text-slate-400'}`}>{sec}</button>
+                            ))}
+                        </nav>
+                        <div className="hidden lg:flex items-center gap-2 font-black text-[10px] text-[#004A3B] uppercase tracking-widest">
+                            Mesa de Trabajo Técnica
+                        </div>
+                    </header>
+
+                    <main className="flex-1 overflow-y-auto bg-[#F1F5F9] p-4 md:p-8">
+                        <div className="max-w-[1400px] mx-auto slide-enter">
+                            <div className="mb-6 border-l-4 border-[#D4A056] pl-6">
+                                <h2 className="text-3xl font-black text-[#004A3B] tracking-tight uppercase italic">{title}</h2>
+                                <p className="text-base text-slate-500 font-semibold mt-1">{subtitle}</p>
+                            </div>
+                            {children}
+                        </div>
+                    </main>
+
+                    <footer className="bg-white border-t border-slate-200 p-3 flex justify-between items-center px-8 text-[10px] text-slate-400 font-bold uppercase tracking-widest italic no-print shadow-inner">
+                        <p>Seguros Bolívar | Equipo de Arquitectura Empresarial</p>
+                        <div className="flex gap-4 items-center">
+                            <span className="text-[9px] font-black mr-2">Página {currentStep + 1} de {total}</span>
+                            <button onClick={() => currentStep > 0 && onNavClick(currentStep - 1)} className="p-1 hover:bg-slate-100 rounded-full transition-colors border border-slate-200"><span className="material-symbols-outlined text-lg">chevron_left</span></button>
+                            <button onClick={() => currentStep < total - 1 && onNavClick(currentStep + 1)} className="p-1 hover:bg-slate-100 rounded-full transition-colors border border-slate-200"><span className="material-symbols-outlined text-lg">chevron_right</span></button>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [currentStep, setCurrentStep] = useState(0);
+
+            const slides = [
+                // 0: Portada
+                {
+                    title: "Soberanía Tecnológica",
+                    subtitle: "Hacia una gestión de cartera nativa, eficiente y escalable",
+                    content: (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center py-6">
+                            <div className="space-y-6">
+                                <div className="inline-flex items-center px-4 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-[#004A3B] text-[10px] font-black uppercase tracking-widest">Iniciativa Inhouse 2026</div>
+                                <h3 className="text-5xl lg:text-7xl font-black text-[#004A3B] leading-[0.95] tracking-tighter uppercase">Huella <br/><span className="text-[#D4A056] italic font-medium tracking-normal">Inhouse</span></h3>
+                                <p className="text-slate-600 text-lg leading-relaxed font-medium">Propuesta técnica para eliminar la dependencia del proveedor <strong>Oracle Service Cloud (Imagine CX)</strong>, apalancando nuestras capacidades internas en AWS, OpenL Tablets y O'Leary.</p>
+                                <div className="p-4 bg-white rounded-2xl border border-slate-200 flex gap-4 items-center shadow-sm max-w-md">
+                                    <span className="material-symbols-outlined text-[#D4A056] text-3xl">model_training</span>
+                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-tight">Basado en hallazgos de repositorios, bases de datos y servicios expuestos.</p>
+                                </div>
+                            </div>
+                            <div className="bolivar-gradient p-10 rounded-[3rem] shadow-2xl text-white relative overflow-hidden">
+                                <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/5 rounded-full"></div>
+                                <h4 className="text-2xl font-black mb-6 uppercase tracking-tighter text-[#D4A056]">Propuesta de Valor Core</h4>
+                                <ul className="space-y-5 font-medium opacity-95 text-sm">
+                                    <li className="flex gap-4 items-start"><span className="material-symbols-outlined text-[#D4A056]">savings</span> <div><strong>Ahorro Operativo OPEX:</strong> Eliminación de cobros externos por ajustes funcionales y almacenamiento documental.</div></li>
+                                    <li className="flex gap-4 items-start"><span className="material-symbols-outlined text-[#D4A056]">account_tree</span> <div><strong>Gobernanza de Reglas:</strong> Centralización del 100% de las políticas de reparto en OpenL, eliminando scripts huérfanos.</div></li>
+                                    <li className="flex gap-4 items-start"><span className="material-symbols-outlined text-[#D4A056]">security</span> <div><strong>Cumplimiento Normativo:</strong> Custodia institucional de grabaciones y pagarés en O'Leary Connect.</div></li>
+                                </ul>
+                            </div>
+                        </div>
+                    )
+                },
+                // 1: Contexto de Negocio
+                {
+                    title: "Contexto de Negocio (KPIs)",
+                    subtitle: "Indicadores clave que la arquitectura debe soportar y optimizar",
+                    content: (
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                            {[
+                                { label: "Siniestralidad Mensual", val: "$40.000M", desc: "COP mensuales reportados en avisos de siniestro. Es el punto de partida del flujo operativo.", icon: "bar_chart" },
+                                { label: "Meta Desistimiento", val: "75%", desc: "KPI crítico. Porcentaje de siniestros que deben ser pagados por inquilinos antes del día 23.", icon: "track_changes" },
+                                { label: "Capacidad de Recobro", val: "$17.000M", desc: "Promedio mensual indemnizado a inmobiliarias que entra a fase de restitución/recobro.", icon: "account_balance_wallet" },
+                                { label: "Volumen de Transacciones", val: "+100k", desc: "Registros sincronizados mensualmente entre SAI y Huella que saturan el Job de migración actual.", icon: "sync" },
+                                { label: "Mora Activa", val: "86.000", desc: "Número de solicitudes vigentes en proceso de cobro gestionadas por los asesores.", icon: "group" },
+                                { label: "Brecha Davivienda", val: "N/A", desc: "Liquidaciones generadas pero no conciliadas/recaudadas, requiriendo revisión manual.", icon: "warning" }
+                            ].map((item, i) => (
+                                <div key={i} className="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-200 architecture-node flex flex-col justify-between">
+                                    <div>
+                                        <div className="flex justify-between items-start mb-2">
+                                            <span className="material-symbols-outlined text-[#D4A056] text-3xl">{item.icon}</span>
+                                            <span className="text-[9px] font-black bg-slate-100 text-slate-400 px-2 py-1 rounded-full">KPI</span>
+                                        </div>
+                                        <h4 className="font-black text-[#004A3B] uppercase text-[10px] tracking-widest">{item.label}</h4>
+                                        <p className="text-3xl font-black text-slate-800 my-2 tracking-tighter">{item.val}</p>
+                                    </div>
+                                    <p className="text-[11px] text-slate-500 font-medium leading-snug border-t border-slate-100 pt-3 mt-2">{item.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    )
+                },
+                // 2: AS-IS Arquitectura e Infraestructura
+                {
+                    title: "Arquitectura e Infraestructura AS-IS",
+                    subtitle: "Soporte tecnológico actual y flujo de datos",
+                    content: (
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+                                <div className="xl:col-span-1 bg-[#004A3B] text-white p-6 rounded-3xl shadow-lg">
+                                    <h4 className="font-black text-[#D4A056] uppercase text-xs tracking-widest mb-4">Stack Tecnológico</h4>
+                                    <ul className="space-y-4 text-xs font-medium opacity-90">
+                                        <li><strong>Core:</strong> Oracle Forms & Reports.</li>
+                                        <li><strong>Middleware:</strong> Oracle Weblogic Server (versiones 12.2.1.4 y 14.1.1).</li>
+                                        <li><strong>Librería Integración:</strong> <code className="bg-black/20 px-1 rounded">UTL_HTTP</code>.</li>
+                                        <li><strong>Gestión de Trabajos:</strong> PL/SQL Jobs (`JOB_MAIN_MIGRACION` cada minuto).</li>
+                                    </ul>
+                                </div>
+                                <div className="xl:col-span-3 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                                    <h4 className="font-black text-[#004A3B] uppercase text-xs tracking-widest mb-4 border-b border-slate-100 pb-2">Topología de Sincronización</h4>
+                                    <div className="flex flex-col md:flex-row items-center gap-4 text-center mt-6">
+                                        <div className="flex-1 architecture-node p-4 border-2 border-yellow-500 rounded-2xl bg-yellow-50">
+                                            <h5 className="font-black text-sm text-yellow-800">BD PSAI (Core)</h5>
+                                            <p className="text-[10px] mt-2 text-yellow-700">Triggers en tablas principales insertan en <code>MIG_MOVIMIENTOS_CRM</code>.</p>
+                                        </div>
+                                        <span className="material-symbols-outlined text-slate-400 rotate-90 md:rotate-0">arrow_forward</span>
+                                        <div className="flex-1 architecture-node p-4 border-2 border-slate-400 rounded-2xl bg-slate-50">
+                                            <h5 className="font-black text-sm text-slate-700">Weblogic On-Premise</h5>
+                                            <p className="text-[10px] mt-2 text-slate-600"><code>PKG_MIGRACION_CRM</code> toma registros estado 'P' o 'I' y hace llamados SOAP/REST.</p>
+                                        </div>
+                                        <span className="material-symbols-outlined text-slate-400 rotate-90 md:rotate-0">arrow_forward</span>
+                                        <div className="flex-1 architecture-node p-4 border-2 border-blue-500 rounded-2xl bg-blue-50">
+                                            <h5 className="font-black text-sm text-blue-800">Oracle Service Cloud</h5>
+                                            <p className="text-[10px] mt-2 text-blue-700">Silo externo. Recibe datos secuencialmente 1 a 1. Interfaz final del asesor.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                },
+                // 3: Dolores Operativos y Deuda Técnica
+                {
+                    title: "Dolores y Deuda Técnica",
+                    subtitle: "Justificantes críticos para la migración Inhouse",
+                    content: (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            {/* Dolores Operativos */}
+                            <div className="bg-red-50 p-8 rounded-[2rem] border border-red-100 shadow-sm">
+                                <h4 className="font-black text-red-700 uppercase text-sm tracking-widest mb-6 flex items-center gap-2">
+                                    <span className="material-symbols-outlined">money_off</span> Dolores Operativos
+                                </h4>
+                                <div className="space-y-4">
+                                    <div className="bg-white p-4 rounded-xl border border-red-100">
+                                        <h5 className="text-xs font-black text-slate-800 mb-1">Costos Excesivos de Proveedor</h5>
+                                        <p className="text-[10px] text-slate-600">Cobro de $25M por documentación técnica y sobrecostos permanentes por almacenamiento de grabaciones en la nube de Oracle.</p>
+                                    </div>
+                                    <div className="bg-white p-4 rounded-xl border border-red-100">
+                                        <h5 className="text-xs font-black text-slate-800 mb-1">Reglas de Negocio Desarticuladas</h5>
+                                        <p className="text-[10px] text-slate-600">La asignación de cartera depende de un script manual externo que se carga vía Jira, con alto riesgo de error humano.</p>
+                                    </div>
+                                    <div className="bg-white p-4 rounded-xl border border-red-100">
+                                        <h5 className="text-xs font-black text-slate-800 mb-1">Conciliación Davivienda Ineficiente</h5>
+                                        <p className="text-[10px] text-slate-600">Existen liquidaciones reportadas y pagadas que no cruzan con el estado en SAI (estado 'T' vs 'V'), requiriendo engorrosos Workarounds manuales.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {/* Deuda Técnica */}
+                            <div className="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm">
+                                <h4 className="font-black text-[#004A3B] uppercase text-sm tracking-widest mb-6 flex items-center gap-2">
+                                    <span className="material-symbols-outlined">build</span> Deuda Técnica Pura
+                                </h4>
+                                <div className="space-y-4">
+                                    <div className="flex gap-3">
+                                        <span className="material-symbols-outlined text-[#D4A056] text-xl">sync_problem</span>
+                                        <div>
+                                            <h5 className="text-xs font-black text-slate-800">Llamados Cíclicos y Acceso Incorrecto</h5>
+                                            <p className="text-[10px] text-slate-500 mt-1">Llamados de doble vía que degradan el core. El acceso a SAI actual no respeta las cuentas del repositorio Commons Corporativo.</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-3">
+                                        <span className="material-symbols-outlined text-[#D4A056] text-xl">database</span>
+                                        <div>
+                                            <h5 className="text-xs font-black text-slate-800">Sobrecarga Transaccional (PSAI)</h5>
+                                            <p className="text-[10px] text-slate-500 mt-1">El Job secuencial impacta la base maestra. Urge desviar las consultas históricas y reportes hacia un esquema de <strong>Réplica de Sincronización</strong>.</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-3">
+                                        <span className="material-symbols-outlined text-[#D4A056] text-xl">history</span>
+                                        <div>
+                                            <h5 className="text-xs font-black text-slate-800">Ausencia de Lógica de Reintentos</h5>
+                                            <p className="text-[10px] text-slate-500 mt-1">Si falla un servicio (ej. sincronización B3), el sistema no reintenta automáticamente, generando intervención manual ('W' Waiting state estancado).</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-3">
+                                        <span className="material-symbols-outlined text-[#D4A056] text-xl">warning</span>
+                                        <div>
+                                            <h5 className="text-xs font-black text-slate-800">Fragmentación de Middleware</h5>
+                                            <p className="text-[10px] text-slate-500 mt-1">Convivencia riesgosa de paquetes antiguos (`PKG_MIGRACION_CRM`) y nuevos por fallas de certificados identificadas en ambientes Weblogic 14c.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                },
+                // 4: Inventario de Servicios API
+                {
+                    title: "Inventario de Servicios API",
+                    subtitle: "Contratos de integración detectados listos para migrar a ECS",
+                    content: (
+                        <div className="space-y-6">
+                            <p className="text-sm text-slate-600">A partir de las colecciones de Postman y matrices en Excel, se identificaron más de 30 <em>endpoints</em>. Este descubrimiento <strong>acelera el desarrollo inhouse</strong> al proveer la estructura exacta (JSON/XML) de los datos que fluirán por el ESB.</p>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div className="bg-white p-5 rounded-2xl border-t-4 border-[#004A3B] shadow-sm architecture-node">
+                                    <span className="material-symbols-outlined text-[#004A3B] mb-2">assignment_late</span>
+                                    <h5 className="font-black text-xs text-slate-800 mb-2">Gestión Siniestros</h5>
+                                    <ul className="text-[10px] text-slate-500 space-y-1">
+                                        <li>• <code>/siniestro/get</code></li>
+                                        <li>• <code>/amparo</code> (Creación)</li>
+                                        <li>• <code>/polizas</code></li>
+                                        <li>• <code>/lmtesIndRsgos</code></li>
+                                    </ul>
+                                </div>
+                                <div className="bg-white p-5 rounded-2xl border-t-4 border-[#D4A056] shadow-sm architecture-node">
+                                    <span className="material-symbols-outlined text-[#D4A056] mb-2">account_balance</span>
+                                    <h5 className="font-black text-xs text-slate-800 mb-2">Op. Financieras</h5>
+                                    <ul className="text-[10px] text-slate-500 space-y-1">
+                                        <li>• <code>/valoresLiquidacion</code></li>
+                                        <li>• <code>/ReciboCaja</code></li>
+                                        <li>• <code>/DetalleRecibo</code></li>
+                                        <li>• <code>/valoresDeudas</code></li>
+                                    </ul>
+                                </div>
+                                <div className="bg-white p-5 rounded-2xl border-t-4 border-[#004A3B] shadow-sm architecture-node">
+                                    <span className="material-symbols-outlined text-[#004A3B] mb-2">recent_actors</span>
+                                    <h5 className="font-black text-xs text-slate-800 mb-2">Terceros y Contactos</h5>
+                                    <ul className="text-[10px] text-slate-500 space-y-1">
+                                        <li>• <code>/personas</code></li>
+                                        <li>• <code>/datosContactoProxy</code></li>
+                                        <li>• Sincronización B3 vs SAI</li>
+                                    </ul>
+                                </div>
+                                <div className="bg-white p-5 rounded-2xl border-t-4 border-[#D4A056] shadow-sm architecture-node">
+                                    <span className="material-symbols-outlined text-[#D4A056] mb-2">settings</span>
+                                    <h5 className="font-black text-xs text-slate-800 mb-2">Gestión y Ajustes</h5>
+                                    <ul className="text-[10px] text-slate-500 space-y-1">
+                                        <li>• <code>/gestor</code> (Asignaciones)</li>
+                                        <li>• <code>/CesionPoliza</code></li>
+                                        <li>• <code>/cntrtosDvlver</code></li>
+                                        <li>• <code>/ObjcnesSnstros</code></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-200 text-xs font-medium text-emerald-800 flex gap-3">
+                                <span className="material-symbols-outlined">lightbulb</span>
+                                <p><strong>Nota Arquitectónica:</strong> La nueva aplicación utilizará credenciales seguras vía <strong>AWS Secrets Manager</strong>, corrigiendo las vulnerabilidades encontradas en los DataSources actuales.</p>
+                            </div>
+                        </div>
+                    )
+                },
+                // 5: Arquitectura TO-BE
+                {
+                    title: "Arquitectura Objetivo (TO-BE)",
+                    subtitle: "Ecosistema unificado, resiliente y de alto rendimiento",
+                    content: (
+                        <div className="bg-white p-8 rounded-[3rem] border-2 border-slate-100 shadow-inner flex flex-col gap-6 items-center">
+                            <div className="relative w-full max-w-5xl bg-slate-50 p-8 border-2 border-dashed border-[#004A3B] rounded-[2rem] grid grid-cols-1 md:grid-cols-3 gap-6 pt-12">
+                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#004A3B] text-white px-6 py-2 rounded-xl text-[10px] font-black tracking-widest uppercase shadow-lg text-center w-3/4 max-w-sm">NUEVA SOLUCIÓN INHOUSE (AWS ECS - MICROSERVICIOS)</div>
+                                
+                                {/* Componente 1 */}
+                                <div className="architecture-node bg-white p-6 border-2 border-[#004A3B] rounded-3xl flex flex-col justify-between">
+                                    <div className="text-center">
+                                        <span className="material-symbols-outlined text-[#004A3B] text-3xl mb-2">dashboard</span>
+                                        <h5 className="text-[11px] font-black text-[#004A3B] uppercase">Front-End CRM (React/Angular)</h5>
+                                    </div>
+                                    <p className="text-[9px] text-slate-500 font-semibold leading-tight mt-4 pt-4 border-t border-slate-100 text-center">Interfaz nativa para asesores. Reemplaza las pantallas de RightNow. Gestiona bitácoras y links de pago.</p>
+                                </div>
+                                
+                                {/* Componente 2 */}
+                                <div className="architecture-node bg-[#D4A056] p-6 border-2 border-[#b88b4a] rounded-3xl text-white shadow-xl flex flex-col justify-between">
+                                    <div className="text-center">
+                                        <span className="material-symbols-outlined text-white text-3xl mb-2">account_tree</span>
+                                        <h5 className="text-[11px] font-black uppercase">OpenL Tablets</h5>
+                                    </div>
+                                    <p className="text-[9px] text-white/90 font-semibold leading-tight mt-4 pt-4 border-t border-white/20 text-center">Motor centralizado. Ejecuta reglas de asignación, desistimiento y validaciones de conciliación.</p>
+                                </div>
+
+                                {/* Componente 3 */}
+                                <div className="architecture-node bg-white p-6 border-2 border-[#004A3B] rounded-3xl flex flex-col justify-between">
+                                    <div className="text-center">
+                                        <span className="material-symbols-outlined text-[#004A3B] text-3xl mb-2">cloud_upload</span>
+                                        <h5 className="text-[11px] font-black text-[#004A3B] uppercase">O'Leary Connect</h5>
+                                    </div>
+                                    <p className="text-[9px] text-slate-500 font-semibold leading-tight mt-4 pt-4 border-t border-slate-100 text-center">API Client hacia el gestor documental. Envía grabaciones y anexos, eliminando costos de S3 externo.</p>
+                                </div>
+                            </div>
+
+                            <span className="material-symbols-outlined text-slate-300">swap_vert</span>
+
+                            <div className="flex gap-6 flex-wrap justify-center w-full max-w-4xl">
+                                <div className="architecture-node bg-yellow-400 p-4 border-2 border-yellow-600 rounded-2xl flex-1 min-w-[150px] shadow-md">
+                                    <h5 className="text-[10px] font-black uppercase text-yellow-900 text-center">PSAI Principal</h5>
+                                    <p className="text-[8px] text-yellow-800 text-center mt-1">Escritura Transaccional. Libre de cargas masivas.</p>
+                                </div>
+                                <div className="architecture-node bg-yellow-100 p-4 border-2 border-yellow-300 rounded-2xl flex-1 min-w-[150px]">
+                                    <h5 className="text-[10px] font-black uppercase text-yellow-900 text-center">PSAI Réplica</h5>
+                                    <p className="text-[8px] text-yellow-800 text-center mt-1">Lectura. Resuelve deuda técnica de reportes pesados.</p>
+                                </div>
+                                <div className="architecture-node bg-slate-800 p-4 border-2 border-slate-950 rounded-2xl flex-1 min-w-[150px] text-white shadow-md">
+                                    <h5 className="text-[10px] font-black uppercase text-center">ESB Bolívar</h5>
+                                    <p className="text-[8px] text-slate-300 text-center mt-1">Bus Integración. Weblogic On-Premise con Reintentos.</p>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                },
+                // 6: OpenL Tablets (Reglas)
+                {
+                    title: "Gobernanza Total: OpenL Tablets",
+                    subtitle: "Evolución hacia el cerebro central de la operación",
+                    content: (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="space-y-6">
+                                <div className="bg-[#004A3B] text-white p-5 rounded-2xl text-sm italic font-medium leading-relaxed shadow-lg">
+                                    "Actualmente Huella ya utiliza OpenL de forma parcial. Sin embargo, en el modelo TO-BE, este motor evolucionará para asumir el <strong>control absoluto</strong> de las políticas del negocio, erradicando los scripts obsoletos."
+                                </div>
+                                <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                                    <h4 className="font-black text-[#004A3B] uppercase text-[10px] tracking-widest mb-4">Lógicas Absorbidas (Tablas de Decisión)</h4>
+                                    <ul className="text-xs space-y-3 font-bold text-slate-700">
+                                        <li className="flex gap-3 items-center"><span className="material-symbols-outlined text-[#D4A056] text-lg">fact_check</span> Reparto equitativo (Reemplaza script antiguo).</li>
+                                        <li className="flex gap-3 items-center"><span className="material-symbols-outlined text-[#D4A056] text-lg">timer</span> Transición de Estados Automática (Nuevo &#8594; Preventivo &#8594; Jurídico).</li>
+                                        <li className="flex gap-3 items-center"><span className="material-symbols-outlined text-[#D4A056] text-lg">price_check</span> Conciliación de Pagos (Validación de estado 'T' Davivienda).</li>
+                                        <li className="flex gap-3 items-center"><span className="material-symbols-outlined text-[#D4A056] text-lg">cancel</span> Disparo automático de estado "Objetado" si hay pago previo al giro.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div className="flex flex-col gap-6">
+                                <div className="bg-emerald-50 p-6 rounded-3xl border border-emerald-100 architecture-node">
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <span className="material-symbols-outlined text-emerald-600 text-3xl">developer_mode</span>
+                                        <h5 className="font-black text-slate-800 text-sm uppercase">Cero Dependencia Técnica</h5>
+                                    </div>
+                                    <p className="text-xs text-slate-600 leading-relaxed">Si la meta de desistimiento cambia del 75% al 80%, el coordinador operativo edita una tabla Excel. OpenL la compila en caliente sin necesidad de despliegues de ingeniería.</p>
+                                </div>
+                                <div className="bg-emerald-50 p-6 rounded-3xl border border-emerald-100 architecture-node">
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <span className="material-symbols-outlined text-emerald-600 text-3xl">menu_book</span>
+                                        <h5 className="font-black text-slate-800 text-sm uppercase">Documentación Viva</h5>
+                                    </div>
+                                    <p className="text-xs text-slate-600 leading-relaxed">La matriz de reglas en Excel ES la especificación técnica. Se mitiga instantáneamente la pérdida de conocimiento sufrida por la rotación de proveedores externos.</p>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                },
+                // 7: Custodia Documental O'Leary
+                {
+                    title: "Custodia Documental (O'Leary)",
+                    subtitle: "Estándar corporativo, legal y financiero",
+                    content: (
+                        <div className="bg-white p-8 rounded-[3rem] border border-slate-200 shadow-sm flex flex-col md:flex-row gap-10">
+                            <div className="flex-1 space-y-6">
+                                <h4 className="text-xl font-black text-[#004A3B] tracking-tight">El fin de los sobrecostos en la Nube</h4>
+                                <p className="text-sm text-slate-600 leading-relaxed font-medium">
+                                    La arquitectura actual almacena pesados archivos multimedia y PDFs en la infraestructura del proveedor o en S3 sin políticas de retención claras. La integración con <strong>O'Leary</strong> centraliza el archivo y garantiza cumplimiento normativo.
+                                </p>
+                                
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+                                    <div className="p-4 bg-slate-50 border-l-4 border-[#D4A056] rounded-r-xl">
+                                        <span className="material-symbols-outlined text-[#D4A056] mb-1">mic</span>
+                                        <h5 className="text-[10px] font-black uppercase text-slate-800 tracking-widest">Grabaciones de Cobro</h5>
+                                        <p className="text-[10px] text-slate-500 mt-1">Audios de llamadas donde se pactan acuerdos de pago vinculantes.</p>
+                                    </div>
+                                    <div className="p-4 bg-slate-50 border-l-4 border-[#D4A056] rounded-r-xl">
+                                        <span className="material-symbols-outlined text-[#D4A056] mb-1">receipt_long</span>
+                                        <h5 className="text-[10px] font-black uppercase text-slate-800 tracking-widest">Liquidaciones Davivienda</h5>
+                                        <p className="text-[10px] text-slate-500 mt-1">Soportes y tirillas de pago no conciliados o ajustados contablemente.</p>
+                                    </div>
+                                    <div className="p-4 bg-slate-50 border-l-4 border-[#004A3B] rounded-r-xl">
+                                        <span className="material-symbols-outlined text-[#004A3B] mb-1">contract</span>
+                                        <h5 className="text-[10px] font-black uppercase text-slate-800 tracking-widest">Contratos y Pagarés</h5>
+                                        <p className="text-[10px] text-slate-500 mt-1">Documentos firmados digitalmente o físicos escaneados requeridos por SIJUR.</p>
+                                    </div>
+                                    <div className="p-4 bg-slate-50 border-l-4 border-[#004A3B] rounded-r-xl">
+                                        <span className="material-symbols-outlined text-[#004A3B] mb-1">attach_file</span>
+                                        <h5 className="text-[10px] font-black uppercase text-slate-800 tracking-widest">Anexos de Siniestros</h5>
+                                        <p className="text-[10px] text-slate-500 mt-1">Evidencias cargadas inicialmente desde el portal SIOS.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="w-full md:w-64 bg-[#004A3B] rounded-[2.5rem] p-8 text-white text-center shadow-xl flex flex-col justify-center items-center">
+                                <span className="material-symbols-outlined text-[#D4A056] text-6xl mb-4">gavel</span>
+                                <h4 className="font-black text-sm uppercase mb-2">Validez Jurídica</h4>
+                                <p className="text-[10px] opacity-80 leading-relaxed font-bold tracking-widest uppercase">Garantiza la trazabilidad e indexación requerida para procesos de restitución y embargos.</p>
+                            </div>
+                        </div>
+                    )
+                },
+                // 8: Roadmap Detallado
+                {
+                    title: "Roadmap Estratégico de Transición",
+                    subtitle: "Plan de acción para la liberación de dependencia",
+                    content: (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pb-10">
+                            {/* Fase 1 */}
+                            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden architecture-node flex flex-col">
+                                <div className="bg-[#004A3B] text-white p-4 text-center">
+                                    <span className="text-[10px] font-black tracking-widest uppercase opacity-70">Mes 1</span>
+                                    <h4 className="font-black text-sm uppercase mt-1">Extracción y Limpieza</h4>
+                                </div>
+                                <div className="p-4 flex-1">
+                                    <ul className="text-[10px] space-y-3 font-medium text-slate-600 list-disc pl-3">
+                                        <li>Migración de la tabla `MIG_MOVIMIENTOS_CRM`.</li>
+                                        <li>Extracción de bitácoras y grabaciones históricas de RightNow.</li>
+                                        <li>Habilitación de BD PSAI Réplica.</li>
+                                        <li>Saneamiento de certificados en clúster Weblogic 14c.</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            {/* Fase 2 */}
+                            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden architecture-node flex flex-col">
+                                <div className="bg-[#D4A056] text-[#004A3B] p-4 text-center">
+                                    <span className="text-[10px] font-black tracking-widest uppercase opacity-70">Mes 2 - 3</span>
+                                    <h4 className="font-black text-sm uppercase mt-1">Backend & OpenL</h4>
+                                </div>
+                                <div className="p-4 flex-1">
+                                    <ul className="text-[10px] space-y-3 font-medium text-slate-600 list-disc pl-3">
+                                        <li>Traducción de scripts de Planeación a tablas Excel de OpenL.</li>
+                                        <li>Desarrollo de microservicios en AWS ECS basados en API Postman.</li>
+                                        <li>Implementación de lógica de reintentos (Eliminar estado 'W' manual).</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            {/* Fase 3 */}
+                            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden architecture-node flex flex-col">
+                                <div className="bg-slate-700 text-white p-4 text-center">
+                                    <span className="text-[10px] font-black tracking-widest uppercase opacity-70">Mes 4</span>
+                                    <h4 className="font-black text-sm uppercase mt-1">Integración O'Leary & Conciliación</h4>
+                                </div>
+                                <div className="p-4 flex-1">
+                                    <ul className="text-[10px] space-y-3 font-medium text-slate-600 list-disc pl-3">
+                                        <li>Conexión de API Client con O'Leary Connect.</li>
+                                        <li>Creación de Job de cruce (estado 'T' vs 'V') para liquidaciones Davivienda.</li>
+                                        <li>Pruebas de estrés y tuning de timeouts.</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            {/* Fase 4 */}
+                            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden architecture-node flex flex-col">
+                                <div className="bg-slate-200 text-slate-600 p-4 text-center">
+                                    <span className="text-[10px] font-black tracking-widest uppercase opacity-70">Mes 5</span>
+                                    <h4 className="font-black text-sm uppercase mt-1">UI Nativa & Switch-Off</h4>
+                                </div>
+                                <div className="p-4 flex-1">
+                                    <ul className="text-[10px] space-y-3 font-medium text-slate-600 list-disc pl-3">
+                                        <li>Despliegue final del Front-End React/Angular para asesores.</li>
+                                        <li>Migración paralela en ventanas de mantenimiento.</li>
+                                        <li>Apagado definitivo (Switch-off) de contrato Imagine CX.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                }
+            ];
+
+            const handleNavClick = (idx) => { setCurrentStep(idx); };
+
+            return (
+                <SlideLayout currentStep={currentStep} total={slides.length} onNavClick={handleNavClick} title={slides[currentStep].title} subtitle={slides[currentStep].subtitle}>
+                    {slides[currentStep].content}
+                </SlideLayout>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
