@@ -31,6 +31,43 @@
             line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block;
             white-space: nowrap; word-wrap: normal; direction: ltr; -webkit-font-smoothing: antialiased;
         }
+
+        /* BPMN Diagram styles */
+        .bpmn-container { overflow-x: auto; overflow-y: hidden; }
+        .bpmn-pool { border: 2px solid #334155; border-radius: 8px; margin-bottom: 4px; }
+        .bpmn-pool-label { background: #1e293b; color: white; writing-mode: horizontal-tb; padding: 6px 10px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; min-width: 90px; display: flex; align-items: center; justify-content: center; border-radius: 6px 0 0 6px; flex-shrink: 0; }
+        .bpmn-lane { display: flex; align-items: stretch; min-height: 80px; }
+        .bpmn-content { display: flex; align-items: center; gap: 6px; padding: 12px; flex-wrap: nowrap; overflow-x: auto; flex: 1; }
+        .bpmn-event-start { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #22c55e; background: #dcfce7; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 9px; text-align: center; }
+        .bpmn-event-end { width: 32px; height: 32px; border-radius: 50%; border: 4px solid #ef4444; background: #fee2e2; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .bpmn-event-timer { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #f59e0b; background: #fef3c7; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 8px; text-align: center; }
+        .bpmn-event-intermediate { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #6366f1; background: #eef2ff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .bpmn-task { min-width: 90px; max-width: 110px; min-height: 44px; border: 1px solid #94a3b8; border-radius: 8px; background: white; padding: 6px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 9px; line-height: 1.2; font-weight: 600; color: #1e293b; flex-shrink: 0; }
+        .bpmn-task-service { border-color: #004A3B; background: #f0fdf4; color: #004A3B; }
+        .bpmn-task-send { border-color: #3b82f6; background: #eff6ff; color: #1d4ed8; }
+        .bpmn-task-receive { border-color: #8b5cf6; background: #f5f3ff; color: #6d28d9; }
+        .bpmn-gateway { width: 36px; height: 36px; background: white; border: 2px solid #f59e0b; transform: rotate(45deg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .bpmn-gateway-label { font-size: 8px; transform: rotate(-45deg); text-align: center; line-height: 1; font-weight: 700; }
+        .bpmn-arrow { color: #64748b; font-size: 16px; flex-shrink: 0; }
+        .bpmn-wrapper { display: flex; flex-direction: column; gap: 2px; min-width: max-content; }
+        .bpmn-label { font-size: 8px; text-align: center; color: #475569; margin-top: 2px; max-width: 90px; }
+        .bpmn-item { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+        .bpmn-connector { display: flex; align-items: center; padding: 0 2px; flex-shrink: 0; }
+        .bpmn-connector-line { height: 2px; width: 20px; background: #94a3b8; }
+        .bpmn-connector-arrow { width: 0; height: 0; border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-left: 7px solid #94a3b8; }
+
+        /* Comparison table */
+        .comp-table { width: 100%; border-collapse: collapse; }
+        .comp-table th { background: #004A3B; color: white; padding: 8px 12px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .comp-table td { padding: 8px 12px; border-bottom: 1px solid #e2e8f0; font-size: 11px; vertical-align: top; }
+        .comp-table tr:nth-child(even) td { background: #f8fafc; }
+        .badge-asis { background: #fee2e2; color: #ef4444; padding: 2px 8px; border-radius: 99px; font-size: 9px; font-weight: 700; }
+        .badge-tobe { background: #dcfce7; color: #16a34a; padding: 2px 8px; border-radius: 99px; font-size: 9px; font-weight: 700; }
+
+        /* Sync diagram */
+        .sync-node { border-radius: 8px; padding: 10px 14px; font-size: 10px; font-weight: 700; text-align: center; min-width: 120px; }
+        .sync-arrow { display: flex; align-items: center; justify-content: center; color: #cbd5e1; }
+        .sync-arrow-v { display: flex; flex-direction: column; align-items: center; }
     </style>
 </head>
 <body class="antialiased text-slate-900">
@@ -41,8 +78,8 @@
 
         const SlideLayout = ({ title, subtitle, children, currentStep, total, onNavClick }) => {
             const sections = [
-                "Inicio", "Contexto Negocio", "Infra AS-IS", "Dolores y Deuda", 
-                "Servicios API", "Arquitectura TO-BE", "Motor OpenL", "Custodia O'Leary", "Roadmap"
+                "Inicio", "Contexto", "Procesos BPMN", "Sincronización SAI", "Desistimiento",
+                "Infra AS-IS", "Dolores", "Servicios API", "Arquitectura TO-BE", "OpenL", "O'Leary", "Roadmap"
             ];
             
             return (
@@ -88,6 +125,64 @@
             );
         };
 
+        // BPMN Helper Components
+        const BpmnArrow = () => (
+            <div className="bpmn-connector">
+                <div className="bpmn-connector-line"></div>
+                <div className="bpmn-connector-arrow"></div>
+            </div>
+        );
+
+        const BpmnStart = ({ label }) => (
+            <div className="bpmn-item">
+                <div className="bpmn-event-start">▶</div>
+                {label && <div className="bpmn-label">{label}</div>}
+            </div>
+        );
+
+        const BpmnEnd = ({ label }) => (
+            <div className="bpmn-item">
+                <div className="bpmn-event-end"><div className="w-3 h-3 rounded-full bg-red-500"></div></div>
+                {label && <div className="bpmn-label">{label}</div>}
+            </div>
+        );
+
+        const BpmnTimer = ({ label }) => (
+            <div className="bpmn-item">
+                <div className="bpmn-event-timer">⏱</div>
+                {label && <div className="bpmn-label">{label}</div>}
+            </div>
+        );
+
+        const BpmnTask = ({ label, type }) => {
+            const cls = type === 'service' ? 'bpmn-task bpmn-task-service' : type === 'send' ? 'bpmn-task bpmn-task-send' : type === 'receive' ? 'bpmn-task bpmn-task-receive' : 'bpmn-task';
+            return (
+                <div className="bpmn-item">
+                    <div className={cls}>{label}</div>
+                </div>
+            );
+        };
+
+        const BpmnGateway = ({ label }) => (
+            <div className="bpmn-item">
+                <div className="bpmn-gateway"><div className="bpmn-gateway-label">◇</div></div>
+                {label && <div className="bpmn-label mt-2">{label}</div>}
+            </div>
+        );
+
+        const BpmnLane = ({ label, color, children }) => (
+            <div className="bpmn-pool">
+                <div className="bpmn-lane">
+                    <div className="bpmn-pool-label" style={{ background: color || '#1e293b', minWidth: '100px' }}>
+                        {label}
+                    </div>
+                    <div className="bpmn-content">
+                        {children}
+                    </div>
+                </div>
+            </div>
+        );
+
         const App = () => {
             const [currentStep, setCurrentStep] = useState(0);
 
@@ -104,7 +199,7 @@
                                 <p className="text-slate-600 text-lg leading-relaxed font-medium">Propuesta técnica para eliminar la dependencia del proveedor <strong>Oracle Service Cloud (Imagine CX)</strong>, apalancando nuestras capacidades internas en AWS, OpenL Tablets y O'Leary.</p>
                                 <div className="p-4 bg-white rounded-2xl border border-slate-200 flex gap-4 items-center shadow-sm max-w-md">
                                     <span className="material-symbols-outlined text-[#D4A056] text-3xl">model_training</span>
-                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-tight">Basado en hallazgos de repositorios, bases de datos y servicios expuestos.</p>
+                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-tight">Basado en hallazgos de repositorios, bases de datos, diagramas BPMN y servicios expuestos.</p>
                                 </div>
                             </div>
                             <div className="bolivar-gradient p-10 rounded-[3rem] shadow-2xl text-white relative overflow-hidden">
@@ -114,12 +209,13 @@
                                     <li className="flex gap-4 items-start"><span className="material-symbols-outlined text-[#D4A056]">savings</span> <div><strong>Ahorro Operativo OPEX:</strong> Eliminación de cobros externos por ajustes funcionales y almacenamiento documental.</div></li>
                                     <li className="flex gap-4 items-start"><span className="material-symbols-outlined text-[#D4A056]">account_tree</span> <div><strong>Gobernanza de Reglas:</strong> Centralización del 100% de las políticas de reparto en OpenL, eliminando scripts huérfanos.</div></li>
                                     <li className="flex gap-4 items-start"><span className="material-symbols-outlined text-[#D4A056]">security</span> <div><strong>Cumplimiento Normativo:</strong> Custodia institucional de grabaciones y pagarés en O'Leary Connect.</div></li>
+                                    <li className="flex gap-4 items-start"><span className="material-symbols-outlined text-[#D4A056]">schema</span> <div><strong>Procesos Documentados:</strong> 3 procesos BPMN críticos identificados y analizados en profundidad.</div></li>
                                 </ul>
                             </div>
                         </div>
                     )
                 },
-                // 1: Contexto de Negocio
+                // 1: Contexto de Negocio (KPIs)
                 {
                     title: "Contexto de Negocio (KPIs)",
                     subtitle: "Indicadores clave que la arquitectura debe soportar y optimizar",
@@ -148,7 +244,346 @@
                         </div>
                     )
                 },
-                // 2: AS-IS Arquitectura e Infraestructura
+                // 2: Visión General Procesos BPMN
+                {
+                    title: "Procesos de Negocio (BPMN)",
+                    subtitle: "Visión general de los 3 procesos críticos identificados en la operación Huella",
+                    content: (
+                        <div className="space-y-6">
+                            <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl flex gap-3 items-start">
+                                <span className="material-symbols-outlined text-emerald-600 text-2xl mt-0.5">info</span>
+                                <div>
+                                    <p className="text-xs font-black text-emerald-800 uppercase tracking-widest">Hallazgo de Análisis</p>
+                                    <p className="text-xs text-emerald-700 mt-1 font-medium">Se identificaron y documentaron <strong>3 procesos BPMN clave</strong> que Huella soporta actualmente. Estos procesos evidencian el alto valor de negocio de la herramienta y la complejidad que la nueva arquitectura inhouse debe preservar y mejorar.</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div className="bg-white p-6 rounded-3xl border-t-4 border-[#004A3B] shadow-sm architecture-node">
+                                    <span className="material-symbols-outlined text-[#004A3B] text-3xl mb-3">sync_alt</span>
+                                    <h4 className="font-black text-slate-800 text-sm uppercase mb-2">Sincronización SAI → Huella</h4>
+                                    <p className="text-xs text-slate-500 leading-relaxed font-medium mb-4">Flujo técnico de sincronización de datos de siniestros entre SAI (core) y Huella (CRM). Involucra triggers, tablas MIG, Jobs PL/SQL y llamados SOAP/REST vía Oracle Service Bus.</p>
+                                    <div className="space-y-1">
+                                        <div className="flex items-center gap-2 text-[10px] font-bold text-slate-600"><span className="material-symbols-outlined text-xs text-[#D4A056]">circle</span>34+ tablas de migración</div>
+                                        <div className="flex items-center gap-2 text-[10px] font-bold text-slate-600"><span className="material-symbols-outlined text-xs text-[#D4A056]">circle</span>Job cada 5 minutos</div>
+                                        <div className="flex items-center gap-2 text-[10px] font-bold text-slate-600"><span className="material-symbols-outlined text-xs text-[#D4A056]">circle</span>Cuello de botella identificado</div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white p-6 rounded-3xl border-t-4 border-[#D4A056] shadow-sm architecture-node">
+                                    <span className="material-symbols-outlined text-[#D4A056] text-3xl mb-3">cancel</span>
+                                    <h4 className="font-black text-slate-800 text-sm uppercase mb-2">Proceso de Desistimiento</h4>
+                                    <p className="text-xs text-slate-500 leading-relaxed font-medium mb-4">Proceso BPMN multi-actor (Inmobiliaria, Asesor, Planeación, Inteligencia, Comercial, Indemnizaciones) para la gestión del KPI del 75% de desistimiento antes del día 23 del mes.</p>
+                                    <div className="space-y-1">
+                                        <div className="flex items-center gap-2 text-[10px] font-bold text-slate-600"><span className="material-symbols-outlined text-xs text-[#D4A056]">circle</span>6 pools participantes</div>
+                                        <div className="flex items-center gap-2 text-[10px] font-bold text-slate-600"><span className="material-symbols-outlined text-xs text-[#D4A056]">circle</span>Evolución 2023 → 2025</div>
+                                        <div className="flex items-center gap-2 text-[10px] font-bold text-slate-600"><span className="material-symbols-outlined text-xs text-[#D4A056]">circle</span>Crítico para el 75% meta</div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white p-6 rounded-3xl border-t-4 border-slate-600 shadow-sm architecture-node">
+                                    <span className="material-symbols-outlined text-slate-600 text-3xl mb-3">contacts</span>
+                                    <h4 className="font-black text-slate-800 text-sm uppercase mb-2">Actualización Datos de Contacto</h4>
+                                    <p className="text-xs text-slate-500 leading-relaxed font-medium mb-4">Flujo de enriquecimiento de datos de contacto de arrendatarios y codeudores usando Datacredito. Proceso manual que se carga vía plantilla masiva en Huella.</p>
+                                    <div className="space-y-1">
+                                        <div className="flex items-center gap-2 text-[10px] font-bold text-slate-600"><span className="material-symbols-outlined text-xs text-[#D4A056]">circle</span>Proceso manual hoy</div>
+                                        <div className="flex items-center gap-2 text-[10px] font-bold text-slate-600"><span className="material-symbols-outlined text-xs text-[#D4A056]">circle</span>Max 6 hrs hábiles</div>
+                                        <div className="flex items-center gap-2 text-[10px] font-bold text-slate-600"><span className="material-symbols-outlined text-xs text-[#D4A056]">circle</span>Automatizable en TO-BE</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                                <h4 className="font-black text-[#004A3B] uppercase text-xs tracking-widest mb-4">Actores del Ecosistema Huella</h4>
+                                <div className="flex flex-wrap gap-3">
+                                    {["Inmobiliaria", "Outsourcing / Asesor Libertador", "Planeación", "Asesor Inteligencia de Negocio", "Comercial", "Indemnizaciones", "Supervisor EL", "SAI (Core)"].map((actor, i) => (
+                                        <div key={i} className={`px-3 py-1.5 rounded-full text-[10px] font-bold ${i < 2 ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : i < 5 ? 'bg-blue-50 text-blue-700 border border-blue-100' : 'bg-amber-50 text-amber-700 border border-amber-100'}`}>
+                                            {actor}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )
+                },
+                // 3: BPMN Sincronización SAI-Huella
+                {
+                    title: "BPMN: Sincronización SAI → Huella",
+                    subtitle: "Arquitectura de sincronización de datos entre el core SAI y el CRM Huella (AS-IS)",
+                    content: (
+                        <div className="space-y-6">
+                            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
+                                <h4 className="font-black text-[#004A3B] uppercase text-xs tracking-widest mb-4 border-b border-slate-100 pb-2">Flujo Técnico de Sincronización (AS-IS)</h4>
+                                
+                                {/* Layer 1: SAI Database */}
+                                <div className="bpmn-pool mb-3">
+                                    <div className="bpmn-lane">
+                                        <div className="bpmn-pool-label" style={{background: '#166534', minWidth: '100px'}}>BD SAI (Core)</div>
+                                        <div className="bpmn-content">
+                                            <BpmnTask label="Tablas siniestros (34+ tablas)" type="service" />
+                                            <BpmnArrow />
+                                            <BpmnTask label="Triggers de tablas siniestros: TRG_HUELLA_AU" type="service" />
+                                            <BpmnArrow />
+                                            <div className="bpmn-item">
+                                                <div className="bpmn-task" style={{borderColor: '#d97706', background: '#fffbeb', color: '#92400e', minWidth: '120px'}}>MIG_MOVIMIENTOS_CRM (tabla cola)</div>
+                                                <div className="bpmn-label">Estado: P/I/V/W/E</div>
+                                            </div>
+                                            <BpmnArrow />
+                                            <div className="bpmn-item">
+                                                <div className="bpmn-task" style={{borderColor: '#7c3aed', background: '#f5f3ff', color: '#5b21b6', minWidth: '120px'}}>Tablas MIG_* (34+ tablas de staging)</div>
+                                                <div className="bpmn-label">Espejo de entidades</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Layer 2: Weblogic middle */}
+                                <div className="bpmn-pool mb-3">
+                                    <div className="bpmn-lane">
+                                        <div className="bpmn-pool-label" style={{background: '#1e3a5f', minWidth: '100px'}}>Weblogic On-Premise</div>
+                                        <div className="bpmn-content">
+                                            <BpmnTimer label="JOB_MIGRA_RIGHTNOW cada 5 min" />
+                                            <BpmnArrow />
+                                            <BpmnTask label="PKG_MIGRACION_CRM P_MIG_PRINCIPAL" type="" />
+                                            <BpmnArrow />
+                                            <div className="bpmn-item">
+                                                <div className="bpmn-task" style={{borderColor: '#94a3b8', background: '#f8fafc', minWidth:'110px'}}>Lee estado 'P' o 'I' de MIG_MOVIMIENTOS_CRM</div>
+                                            </div>
+                                            <BpmnArrow />
+                                            <BpmnTask label="Llama Oracle Service Bus (SOAP/REST)" type="send" />
+                                            <BpmnArrow />
+                                            <div className="bpmn-item">
+                                                <div className="bpmn-task" style={{background: '#fef3c7', borderColor: '#d97706', color: '#92400e', minWidth:'100px'}}>MIG_MOVIMIENTOS_COUNT (conteo errores)</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Layer 3: OSB */}
+                                <div className="bpmn-pool mb-3">
+                                    <div className="bpmn-lane">
+                                        <div className="bpmn-pool-label" style={{background: '#374151', minWidth: '100px'}}>Oracle Service Bus Bolívar</div>
+                                        <div className="bpmn-content">
+                                            <div className="bpmn-item">
+                                                <div className="bpmn-task" style={{minWidth:'200px', background:'#f1f5f9'}}>Endpoint WSDL: transac.segurosbolivar.com /libertadorServices/MigracionSaiOSB/...</div>
+                                            </div>
+                                            <BpmnArrow />
+                                            <BpmnTask label="Enruta llamados a Huella (1 a 1 secuencial)" type="" />
+                                            <BpmnArrow />
+                                            <div style={{display:'flex', alignItems:'center', gap:'4px'}}>
+                                                <div className="bpmn-task" style={{borderColor: '#dc2626', background: '#fef2f2', color: '#991b1b', minWidth:'80px', fontSize:'9px'}}>⚠️ Sin reintentos</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Layer 4: Huella CRM */}
+                                <div className="bpmn-pool">
+                                    <div className="bpmn-lane">
+                                        <div className="bpmn-pool-label" style={{background: '#1d4ed8', minWidth: '100px'}}>Huella (Oracle RightNow / OSvC)</div>
+                                        <div className="bpmn-content">
+                                            <div className="bpmn-item">
+                                                <div className="bpmn-task" style={{minWidth:'160px', background:'#eff6ff', borderColor:'#3b82f6', color:'#1d4ed8'}}>Endpoint REST: ellibertador.custhelp.com /services/rest/connect/v1.3/...</div>
+                                            </div>
+                                            <BpmnArrow />
+                                            <BpmnTask label="Recibe y guarda en tablas Huella" type="receive" />
+                                            <BpmnArrow />
+                                            <BpmnTask label="Interfaz del asesor (portal RightNow)" type="" />
+                                            <BpmnArrow />
+                                            <BpmnEnd label="Caso registrado" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="bg-red-50 p-4 rounded-xl border border-red-100">
+                                    <h5 className="text-[10px] font-black text-red-700 uppercase mb-2 flex items-center gap-1"><span className="material-symbols-outlined text-sm">warning</span> Dolor Identificado</h5>
+                                    <p className="text-[10px] text-red-600 font-medium">Llamados <strong>secuenciales 1 a 1</strong>: con +100k registros/mes, el Job se convierte en un cuello de botella que impacta el core SAI.</p>
+                                </div>
+                                <div className="bg-amber-50 p-4 rounded-xl border border-amber-100">
+                                    <h5 className="text-[10px] font-black text-amber-700 uppercase mb-2 flex items-center gap-1"><span className="material-symbols-outlined text-sm">history</span> Estado 'W' Problemático</h5>
+                                    <p className="text-[10px] text-amber-600 font-medium">Sin lógica de reintentos: un fallo en el servicio deja registros en estado 'W' (Waiting) que requieren <strong>intervención manual</strong>.</p>
+                                </div>
+                                <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
+                                    <h5 className="text-[10px] font-black text-emerald-700 uppercase mb-2 flex items-center gap-1"><span className="material-symbols-outlined text-sm">lightbulb</span> TO-BE: Cambio Clave</h5>
+                                    <p className="text-[10px] text-emerald-600 font-medium">El ESB nuevo implementará <strong>reintentos automáticos</strong> y una <strong>réplica de lectura</strong> de PSAI para descongestionar el core.</p>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                },
+                // 4: BPMN Desistimiento
+                {
+                    title: "BPMN: Proceso de Desistimiento",
+                    subtitle: "Proceso crítico multi-actor — Meta: 75% desistimiento antes del día 23 del mes",
+                    content: (
+                        <div className="space-y-4">
+                            {/* Comparison AS-IS 2023 vs 2025 */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                                <div className="bg-amber-50 border border-amber-200 p-3 rounded-xl">
+                                    <span className="inline-flex items-center gap-1 bg-amber-200 text-amber-800 text-[9px] font-black px-2 py-0.5 rounded-full mb-2">▲ VERSIÓN AGO 2023</span>
+                                    <p className="text-[10px] text-amber-700 font-medium">Proceso inicial sin separación explícita de roles de Inteligencia de Negocio. Flujo más lineal con gate de "¿habita el inmueble?" y flujo de objeción directo a indemnizaciones.</p>
+                                </div>
+                                <div className="bg-green-50 border border-green-200 p-3 rounded-xl">
+                                    <span className="inline-flex items-center gap-1 bg-green-200 text-green-800 text-[9px] font-black px-2 py-0.5 rounded-full mb-2">✔ VERSIÓN 2025 (con ELI)</span>
+                                    <p className="text-[10px] text-green-700 font-medium">Nueva versión con pool dedicado "Desistimiento ELI". Incorpora actor de Inteligencia de Negocio, flujo de acuerdo con inmobiliaria, validación de acuerdo verídico y formato de pago parcial.</p>
+                                </div>
+                            </div>
+
+                            {/* Main Process BPMN */}
+                            <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm">
+                                <h4 className="font-black text-[#004A3B] uppercase text-xs tracking-widest mb-4 border-b border-slate-100 pb-2 flex items-center gap-2">
+                                    <span className="material-symbols-outlined text-sm">account_tree</span>
+                                    Flujo BPMN: Desistimiento (Vista resumida por Pool)
+                                </h4>
+
+                                {/* Pool: Inmobiliaria */}
+                                <div className="bpmn-pool mb-2">
+                                    <div className="bpmn-lane">
+                                        <div className="bpmn-pool-label" style={{background:'#0d7f5b', minWidth:'90px', fontSize:'9px'}}>Inmobiliaria</div>
+                                        <div className="bpmn-content">
+                                            <BpmnTimer label="1-10 del mes" />
+                                            <BpmnArrow />
+                                            <BpmnTask label="Ingresa aviso de siniestro en SIOS" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Pool: Outsourcing/Asesor */}
+                                <div className="bpmn-pool mb-2">
+                                    <div className="bpmn-lane">
+                                        <div className="bpmn-pool-label" style={{background:'#1e40af', minWidth:'90px', fontSize:'9px'}}>Outsourcing / Asesor</div>
+                                        <div className="bpmn-content">
+                                            <BpmnTask label="Envía SMS notificando mora" type="service" />
+                                            <BpmnArrow />
+                                            <BpmnTask label="Llama al deudor principal" />
+                                            <BpmnArrow />
+                                            <BpmnGateway label="¿Logra contacto?" />
+                                            <BpmnArrow />
+                                            <BpmnGateway label="¿Codeudores?" />
+                                            <BpmnArrow />
+                                            <BpmnGateway label="¿Logró acuerdo?" />
+                                            <BpmnArrow />
+                                            <BpmnGateway label="¿Acuerdo total?" />
+                                            <BpmnArrow />
+                                            <BpmnTask label="Link de pago recuperación" />
+                                            <BpmnArrow />
+                                            <BpmnTask label="Seguimiento al pago" />
+                                            <BpmnArrow />
+                                            <BpmnGateway label="¿Deudor pagó?" />
+                                            <BpmnArrow />
+                                            <BpmnTask label="Terminar caso en HUELLA" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Pool: Planeación */}
+                                <div className="bpmn-pool mb-2">
+                                    <div className="bpmn-lane">
+                                        <div className="bpmn-pool-label" style={{background:'#6d28d9', minWidth:'90px', fontSize:'9px'}}>Planeación</div>
+                                        <div className="bpmn-content">
+                                            <BpmnTimer label="Día 11 del mes" />
+                                            <BpmnArrow />
+                                            <BpmnTask label="Envía base de inmobiliarias desviadas" type="send" />
+                                            <BpmnArrow />
+                                            <BpmnTask label="Envía informe gestión y detalle desistimiento" type="send" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Pool: Inteligencia de Negocio */}
+                                <div className="bpmn-pool mb-2">
+                                    <div className="bpmn-lane">
+                                        <div className="bpmn-pool-label" style={{background:'#0f766e', minWidth:'90px', fontSize:'9px'}}>Inteligencia de Negocio</div>
+                                        <div className="bpmn-content">
+                                            <BpmnTimer label="Diariamente" />
+                                            <BpmnArrow />
+                                            <BpmnTask label="Descarga base campañas HUELLA" />
+                                            <BpmnArrow />
+                                            <BpmnTask label="Excluye clientes ya consultados" />
+                                            <BpmnArrow />
+                                            <BpmnTask label="Monta base en Datacredito" />
+                                            <BpmnArrow />
+                                            <BpmnTimer label="Max 6 hrs hábiles" />
+                                            <BpmnArrow />
+                                            <BpmnTask label="Descarga y ajusta base" />
+                                            <BpmnArrow />
+                                            <BpmnTask label="Carga nuevos datos de contacto en HUELLA" type="service" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Pool: Comercial */}
+                                <div className="bpmn-pool mb-2">
+                                    <div className="bpmn-lane">
+                                        <div className="bpmn-pool-label" style={{background:'#b45309', minWidth:'90px', fontSize:'9px'}}>Comercial</div>
+                                        <div className="bpmn-content">
+                                            <BpmnTimer label="Días 12-13" />
+                                            <BpmnArrow />
+                                            <BpmnTask label="Reunión con inmobiliarias desviadas &gt;30%" />
+                                            <BpmnArrow />
+                                            <BpmnTask label="Reunión si desistimiento &gt;20%" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Pool: Indemnizaciones */}
+                                <div className="bpmn-pool">
+                                    <div className="bpmn-lane">
+                                        <div className="bpmn-pool-label" style={{background:'#991b1b', minWidth:'90px', fontSize:'9px'}}>Indemnizaciones</div>
+                                        <div className="bpmn-content">
+                                            <BpmnTask label="Recibe solicitud de objeción" type="receive" />
+                                            <BpmnArrow />
+                                            <BpmnGateway label="¿Cumple requisitos?" />
+                                            <BpmnArrow />
+                                            <BpmnTask label="Revisa si se puede objetar" />
+                                            <BpmnArrow />
+                                            <BpmnGateway label="¿Se puede objetar?" />
+                                            <BpmnArrow />
+                                            <BpmnTask label="Realiza objeción en SAI" type="service" />
+                                            <BpmnArrow />
+                                            <BpmnTask label="Notifica al asesor" type="send" />
+                                            <BpmnArrow />
+                                            <BpmnTimer label="Día 25-26 del mes" />
+                                            <BpmnArrow />
+                                            <BpmnTask label="Pago de siniestros nuevos" type="" />
+                                            <BpmnArrow />
+                                            <BpmnEnd label="Fin proceso" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                    <h5 className="text-[10px] font-black text-[#004A3B] uppercase mb-2">Cambios Clave 2023 → 2025</h5>
+                                    <div className="space-y-2">
+                                        {[
+                                            ["Objeción directa", "Objeción con validación de requisitos (soporte + hilo correo)"],
+                                            ["Sin segregación de pago", "Gateway: Pago inmobiliaria vs Pago Libertador"],
+                                            ["Sin acuerdo parcial formal", "Formato de pago parcial con 1 mes + proceso cobranza pre-jurídica"],
+                                            ["Sin actor ELI", "Pool 'Desistimiento ELI' con validación de acuerdo verídico"],
+                                        ].map(([antes, despues], i) => (
+                                            <div key={i} className="flex gap-2 text-[9px]">
+                                                <span className="badge-asis whitespace-nowrap">2023</span>
+                                                <span className="text-slate-500">{antes}</span>
+                                                <span className="text-slate-300">→</span>
+                                                <span className="badge-tobe whitespace-nowrap">2025</span>
+                                                <span className="text-slate-600 font-medium">{despues}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="bg-amber-50 p-4 rounded-xl border border-amber-200">
+                                    <h5 className="text-[10px] font-black text-amber-800 uppercase mb-2 flex items-center gap-1"><span className="material-symbols-outlined text-sm">lightbulb</span> Implicación para el TO-BE</h5>
+                                    <p className="text-[10px] text-amber-700 font-medium leading-relaxed">Las reglas de decisión del desistimiento (¿logró acuerdo total? ¿acuerdo verídico? ¿deudor pagó?) son candidatas directas para <strong>tablas de decisión en OpenL Tablets</strong>, eliminando la lógica embebida en RightNow y los scripts manuales de planeación.</p>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                },
+                // 5: AS-IS Arquitectura
                 {
                     title: "Arquitectura e Infraestructura AS-IS",
                     subtitle: "Soporte tecnológico actual y flujo de datos",
@@ -158,10 +593,13 @@
                                 <div className="xl:col-span-1 bg-[#004A3B] text-white p-6 rounded-3xl shadow-lg">
                                     <h4 className="font-black text-[#D4A056] uppercase text-xs tracking-widest mb-4">Stack Tecnológico</h4>
                                     <ul className="space-y-4 text-xs font-medium opacity-90">
-                                        <li><strong>Core:</strong> Oracle Forms & Reports.</li>
+                                        <li><strong>Core:</strong> Oracle Forms &amp; Reports.</li>
+                                        <li><strong>CRM:</strong> Oracle RightNow (OSvC) / Huella.</li>
                                         <li><strong>Middleware:</strong> Oracle Weblogic Server (versiones 12.2.1.4 y 14.1.1).</li>
                                         <li><strong>Librería Integración:</strong> <code className="bg-black/20 px-1 rounded">UTL_HTTP</code>.</li>
-                                        <li><strong>Gestión de Trabajos:</strong> PL/SQL Jobs (`JOB_MAIN_MIGRACION` cada minuto).</li>
+                                        <li><strong>Gestión de Trabajos:</strong> PL/SQL Jobs (`JOB_MIGRA_RIGHTNOW` cada 5 min).</li>
+                                        <li><strong>Bus de Servicios:</strong> Oracle Service Bus (OSB) Bolívar.</li>
+                                        <li><strong>PHP app:</strong> ContactCreate.php (datos contacto).</li>
                                     </ul>
                                 </div>
                                 <div className="xl:col-span-3 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
@@ -174,20 +612,31 @@
                                         <span className="material-symbols-outlined text-slate-400 rotate-90 md:rotate-0">arrow_forward</span>
                                         <div className="flex-1 architecture-node p-4 border-2 border-slate-400 rounded-2xl bg-slate-50">
                                             <h5 className="font-black text-sm text-slate-700">Weblogic On-Premise</h5>
-                                            <p className="text-[10px] mt-2 text-slate-600"><code>PKG_MIGRACION_CRM</code> toma registros estado 'P' o 'I' y hace llamados SOAP/REST.</p>
+                                            <p className="text-[10px] mt-2 text-slate-600"><code>PKG_MIGRACION_CRM</code> toma registros estado 'P' o 'I' y hace llamados SOAP/REST vía OSB.</p>
                                         </div>
                                         <span className="material-symbols-outlined text-slate-400 rotate-90 md:rotate-0">arrow_forward</span>
                                         <div className="flex-1 architecture-node p-4 border-2 border-blue-500 rounded-2xl bg-blue-50">
-                                            <h5 className="font-black text-sm text-blue-800">Oracle Service Cloud</h5>
+                                            <h5 className="font-black text-sm text-blue-800">Oracle Service Cloud (Huella)</h5>
                                             <p className="text-[10px] mt-2 text-blue-700">Silo externo. Recibe datos secuencialmente 1 a 1. Interfaz final del asesor.</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Tables discovery */}
+                            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                                <h4 className="font-black text-[#004A3B] uppercase text-xs tracking-widest mb-3">Entidades Principales SAI Sincronizadas con Huella</h4>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {["AVSOS_SNSTROS", "VLRES_SNSTROS", "CNCPTOS_DTLLE_RCBOS", "OBLIGACIONES_PROCESO", "PRSNAS", "SSPNSNES_SNSTROS", "VLRES_DDAS", "VLRES_LQDCION", "AMPROS_SNSTROS", "LMTES_IND_RSGOS", "DSCPCNES_EFCTDAS", "DDAS_MRCDAS_SNDAS", "CNTRTOS_DVLVER", "CSNES_PLZAS", "RVRSNES_SNSTROS", "RCBOS_CJA", "PROCESOS", "PLZAS", "LQDCNES_DTLLE", "CO532_GESTOR", "DTLLE_DCMNTOS_SNSTRO", "OBJCNES_SNSTROS"].map((t, i) => (
+                                        <code key={i} className="text-[9px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">{t}</code>
+                                    ))}
+                                    <span className="text-[9px] text-slate-400 self-center">+12 más en tablas MIG_*</span>
+                                </div>
+                            </div>
                         </div>
                     )
                 },
-                // 3: Dolores Operativos y Deuda Técnica
+                // 6: Dolores Operativos y Deuda Técnica
                 {
                     title: "Dolores y Deuda Técnica",
                     subtitle: "Justificantes críticos para la migración Inhouse",
@@ -210,6 +659,10 @@
                                     <div className="bg-white p-4 rounded-xl border border-red-100">
                                         <h5 className="text-xs font-black text-slate-800 mb-1">Conciliación Davivienda Ineficiente</h5>
                                         <p className="text-[10px] text-slate-600">Existen liquidaciones reportadas y pagadas que no cruzan con el estado en SAI (estado 'T' vs 'V'), requiriendo engorrosos Workarounds manuales.</p>
+                                    </div>
+                                    <div className="bg-white p-4 rounded-xl border border-red-100">
+                                        <h5 className="text-xs font-black text-slate-800 mb-1">Proceso de Desistimiento Manual</h5>
+                                        <p className="text-[10px] text-slate-600">El proceso BPMN de desistimiento involucra carga masiva de datos de contacto via plantilla Excel y consultas manuales a Datacredito.</p>
                                     </div>
                                 </div>
                             </div>
@@ -248,12 +701,19 @@
                                             <p className="text-[10px] text-slate-500 mt-1">Convivencia riesgosa de paquetes antiguos (`PKG_MIGRACION_CRM`) y nuevos por fallas de certificados identificadas en ambientes Weblogic 14c.</p>
                                         </div>
                                     </div>
+                                    <div className="flex gap-3">
+                                        <span className="material-symbols-outlined text-[#D4A056] text-xl">account_circle</span>
+                                        <div>
+                                            <h5 className="text-xs font-black text-slate-800">Datos de Contacto Desactualizados</h5>
+                                            <p className="text-[10px] text-slate-500 mt-1">El proceso de actualización de datos de contacto (Datacredito) es completamente manual: descarga, ajuste Excel, carga masiva. Esto dilata el ciclo del proceso de desistimiento.</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     )
                 },
-                // 4: Inventario de Servicios API
+                // 7: Inventario de Servicios API
                 {
                     title: "Inventario de Servicios API",
                     subtitle: "Contratos de integración detectados listos para migrar a ECS",
@@ -289,6 +749,7 @@
                                         <li>• <code>/personas</code></li>
                                         <li>• <code>/datosContactoProxy</code></li>
                                         <li>• Sincronización B3 vs SAI</li>
+                                        <li>• <code>TercerosWS</code> (SOAP)</li>
                                     </ul>
                                 </div>
                                 <div className="bg-white p-5 rounded-2xl border-t-4 border-[#D4A056] shadow-sm architecture-node">
@@ -304,12 +765,12 @@
                             </div>
                             <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-200 text-xs font-medium text-emerald-800 flex gap-3">
                                 <span className="material-symbols-outlined">lightbulb</span>
-                                <p><strong>Nota Arquitectónica:</strong> La nueva aplicación utilizará credenciales seguras vía <strong>AWS Secrets Manager</strong>, corrigiendo las vulnerabilidades encontradas en los DataSources actuales.</p>
+                                <p><strong>Nota Arquitectónica:</strong> La nueva aplicación utilizará credenciales seguras vía <strong>AWS Secrets Manager</strong>, corrigiendo las vulnerabilidades encontradas en los DataSources actuales (credenciales en texto plano en <code>DataSourceConfiguration.java</code>).</p>
                             </div>
                         </div>
                     )
                 },
-                // 5: Arquitectura TO-BE
+                // 8: Arquitectura TO-BE
                 {
                     title: "Arquitectura Objetivo (TO-BE)",
                     subtitle: "Ecosistema unificado, resiliente y de alto rendimiento",
@@ -318,25 +779,22 @@
                             <div className="relative w-full max-w-5xl bg-slate-50 p-8 border-2 border-dashed border-[#004A3B] rounded-[2rem] grid grid-cols-1 md:grid-cols-3 gap-6 pt-12">
                                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#004A3B] text-white px-6 py-2 rounded-xl text-[10px] font-black tracking-widest uppercase shadow-lg text-center w-3/4 max-w-sm">NUEVA SOLUCIÓN INHOUSE (AWS ECS - MICROSERVICIOS)</div>
                                 
-                                {/* Componente 1 */}
                                 <div className="architecture-node bg-white p-6 border-2 border-[#004A3B] rounded-3xl flex flex-col justify-between">
                                     <div className="text-center">
                                         <span className="material-symbols-outlined text-[#004A3B] text-3xl mb-2">dashboard</span>
                                         <h5 className="text-[11px] font-black text-[#004A3B] uppercase">Front-End CRM (React/Angular)</h5>
                                     </div>
-                                    <p className="text-[9px] text-slate-500 font-semibold leading-tight mt-4 pt-4 border-t border-slate-100 text-center">Interfaz nativa para asesores. Reemplaza las pantallas de RightNow. Gestiona bitácoras y links de pago.</p>
+                                    <p className="text-[9px] text-slate-500 font-semibold leading-tight mt-4 pt-4 border-t border-slate-100 text-center">Interfaz nativa para asesores. Reemplaza las pantallas de RightNow. Gestiona bitácoras, links de pago y proceso de desistimiento.</p>
                                 </div>
                                 
-                                {/* Componente 2 */}
                                 <div className="architecture-node bg-[#D4A056] p-6 border-2 border-[#b88b4a] rounded-3xl text-white shadow-xl flex flex-col justify-between">
                                     <div className="text-center">
                                         <span className="material-symbols-outlined text-white text-3xl mb-2">account_tree</span>
                                         <h5 className="text-[11px] font-black uppercase">OpenL Tablets</h5>
                                     </div>
-                                    <p className="text-[9px] text-white/90 font-semibold leading-tight mt-4 pt-4 border-t border-white/20 text-center">Motor centralizado. Ejecuta reglas de asignación, desistimiento y validaciones de conciliación.</p>
+                                    <p className="text-[9px] text-white/90 font-semibold leading-tight mt-4 pt-4 border-t border-white/20 text-center">Motor centralizado. Ejecuta reglas de desistimiento, asignación de cartera y validaciones de conciliación Davivienda.</p>
                                 </div>
 
-                                {/* Componente 3 */}
                                 <div className="architecture-node bg-white p-6 border-2 border-[#004A3B] rounded-3xl flex flex-col justify-between">
                                     <div className="text-center">
                                         <span className="material-symbols-outlined text-[#004A3B] text-3xl mb-2">cloud_upload</span>
@@ -359,13 +817,17 @@
                                 </div>
                                 <div className="architecture-node bg-slate-800 p-4 border-2 border-slate-950 rounded-2xl flex-1 min-w-[150px] text-white shadow-md">
                                     <h5 className="text-[10px] font-black uppercase text-center">ESB Bolívar</h5>
-                                    <p className="text-[8px] text-slate-300 text-center mt-1">Bus Integración. Weblogic On-Premise con Reintentos.</p>
+                                    <p className="text-[8px] text-slate-300 text-center mt-1">Bus Integración. Weblogic On-Premise con Reintentos automáticos.</p>
+                                </div>
+                                <div className="architecture-node bg-blue-100 p-4 border-2 border-blue-300 rounded-2xl flex-1 min-w-[150px]">
+                                    <h5 className="text-[10px] font-black uppercase text-blue-900 text-center">AWS Secrets Manager</h5>
+                                    <p className="text-[8px] text-blue-800 text-center mt-1">Gestión segura de credenciales. Elimina texto plano.</p>
                                 </div>
                             </div>
                         </div>
                     )
                 },
-                // 6: OpenL Tablets (Reglas)
+                // 9: OpenL Tablets
                 {
                     title: "Gobernanza Total: OpenL Tablets",
                     subtitle: "Evolución hacia el cerebro central de la operación",
@@ -378,10 +840,11 @@
                                 <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
                                     <h4 className="font-black text-[#004A3B] uppercase text-[10px] tracking-widest mb-4">Lógicas Absorbidas (Tablas de Decisión)</h4>
                                     <ul className="text-xs space-y-3 font-bold text-slate-700">
-                                        <li className="flex gap-3 items-center"><span className="material-symbols-outlined text-[#D4A056] text-lg">fact_check</span> Reparto equitativo (Reemplaza script antiguo).</li>
-                                        <li className="flex gap-3 items-center"><span className="material-symbols-outlined text-[#D4A056] text-lg">timer</span> Transición de Estados Automática (Nuevo &#8594; Preventivo &#8594; Jurídico).</li>
+                                        <li className="flex gap-3 items-center"><span className="material-symbols-outlined text-[#D4A056] text-lg">fact_check</span> Reparto equitativo de cartera (Reemplaza script manual externo).</li>
+                                        <li className="flex gap-3 items-center"><span className="material-symbols-outlined text-[#D4A056] text-lg">timer</span> Transición de Estados Automática (Nuevo → Preventivo → Jurídico).</li>
                                         <li className="flex gap-3 items-center"><span className="material-symbols-outlined text-[#D4A056] text-lg">price_check</span> Conciliación de Pagos (Validación de estado 'T' Davivienda).</li>
                                         <li className="flex gap-3 items-center"><span className="material-symbols-outlined text-[#D4A056] text-lg">cancel</span> Disparo automático de estado "Objetado" si hay pago previo al giro.</li>
+                                        <li className="flex gap-3 items-center"><span className="material-symbols-outlined text-[#D4A056] text-lg">handshake</span> Reglas de desistimiento: ¿acuerdo total?, ¿acuerdo verídico?, ¿deudor pagó?</li>
                                     </ul>
                                 </div>
                             </div>
@@ -400,11 +863,18 @@
                                     </div>
                                     <p className="text-xs text-slate-600 leading-relaxed">La matriz de reglas en Excel ES la especificación técnica. Se mitiga instantáneamente la pérdida de conocimiento sufrida por la rotación de proveedores externos.</p>
                                 </div>
+                                <div className="bg-blue-50 p-6 rounded-3xl border border-blue-100 architecture-node">
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <span className="material-symbols-outlined text-blue-600 text-3xl">schema</span>
+                                        <h5 className="font-black text-slate-800 text-sm uppercase">Reglas del BPMN Desistimiento → OpenL</h5>
+                                    </div>
+                                    <p className="text-xs text-slate-600 leading-relaxed">Los 5+ gateways de decisión del proceso BPMN de desistimiento se convierten en filas de tablas de decisión: <strong>elegibles, criterios de acuerdo, validación de pago</strong>.</p>
+                                </div>
                             </div>
                         </div>
                     )
                 },
-                // 7: Custodia Documental O'Leary
+                // 10: Custodia Documental O'Leary
                 {
                     title: "Custodia Documental (O'Leary)",
                     subtitle: "Estándar corporativo, legal y financiero",
@@ -420,7 +890,7 @@
                                     <div className="p-4 bg-slate-50 border-l-4 border-[#D4A056] rounded-r-xl">
                                         <span className="material-symbols-outlined text-[#D4A056] mb-1">mic</span>
                                         <h5 className="text-[10px] font-black uppercase text-slate-800 tracking-widest">Grabaciones de Cobro</h5>
-                                        <p className="text-[10px] text-slate-500 mt-1">Audios de llamadas donde se pactan acuerdos de pago vinculantes.</p>
+                                        <p className="text-[10px] text-slate-500 mt-1">Audios de llamadas donde se pactan acuerdos de pago vinculantes (proceso desistimiento).</p>
                                     </div>
                                     <div className="p-4 bg-slate-50 border-l-4 border-[#D4A056] rounded-r-xl">
                                         <span className="material-symbols-outlined text-[#D4A056] mb-1">receipt_long</span>
@@ -435,7 +905,7 @@
                                     <div className="p-4 bg-slate-50 border-l-4 border-[#004A3B] rounded-r-xl">
                                         <span className="material-symbols-outlined text-[#004A3B] mb-1">attach_file</span>
                                         <h5 className="text-[10px] font-black uppercase text-slate-800 tracking-widest">Anexos de Siniestros</h5>
-                                        <p className="text-[10px] text-slate-500 mt-1">Evidencias cargadas inicialmente desde el portal SIOS.</p>
+                                        <p className="text-[10px] text-slate-500 mt-1">Evidencias cargadas inicialmente desde el portal SIOS y durante el proceso de desistimiento.</p>
                                     </div>
                                 </div>
                             </div>
@@ -447,7 +917,7 @@
                         </div>
                     )
                 },
-                // 8: Roadmap Detallado
+                // 11: Roadmap Detallado
                 {
                     title: "Roadmap Estratégico de Transición",
                     subtitle: "Plan de acción para la liberación de dependencia",
@@ -465,6 +935,7 @@
                                         <li>Extracción de bitácoras y grabaciones históricas de RightNow.</li>
                                         <li>Habilitación de BD PSAI Réplica.</li>
                                         <li>Saneamiento de certificados en clúster Weblogic 14c.</li>
+                                        <li>Documentar APIs de los 3 procesos BPMN identificados.</li>
                                     </ul>
                                 </div>
                             </div>
@@ -473,13 +944,15 @@
                             <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden architecture-node flex flex-col">
                                 <div className="bg-[#D4A056] text-[#004A3B] p-4 text-center">
                                     <span className="text-[10px] font-black tracking-widest uppercase opacity-70">Mes 2 - 3</span>
-                                    <h4 className="font-black text-sm uppercase mt-1">Backend & OpenL</h4>
+                                    <h4 className="font-black text-sm uppercase mt-1">Backend &amp; OpenL</h4>
                                 </div>
                                 <div className="p-4 flex-1">
                                     <ul className="text-[10px] space-y-3 font-medium text-slate-600 list-disc pl-3">
-                                        <li>Traducción de scripts de Planeación a tablas Excel de OpenL.</li>
+                                        <li>Traducir gateways del BPMN desistimiento a tablas de decisión OpenL.</li>
+                                        <li>Traducir scripts de Planeación a tablas Excel de OpenL.</li>
                                         <li>Desarrollo de microservicios en AWS ECS basados en API Postman.</li>
                                         <li>Implementación de lógica de reintentos (Eliminar estado 'W' manual).</li>
+                                        <li>Automatizar actualización de datos de Datacredito vía API.</li>
                                     </ul>
                                 </div>
                             </div>
@@ -488,7 +961,7 @@
                             <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden architecture-node flex flex-col">
                                 <div className="bg-slate-700 text-white p-4 text-center">
                                     <span className="text-[10px] font-black tracking-widest uppercase opacity-70">Mes 4</span>
-                                    <h4 className="font-black text-sm uppercase mt-1">Integración O'Leary & Conciliación</h4>
+                                    <h4 className="font-black text-sm uppercase mt-1">Integración O'Leary &amp; Conciliación</h4>
                                 </div>
                                 <div className="p-4 flex-1">
                                     <ul className="text-[10px] space-y-3 font-medium text-slate-600 list-disc pl-3">
@@ -503,11 +976,12 @@
                             <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden architecture-node flex flex-col">
                                 <div className="bg-slate-200 text-slate-600 p-4 text-center">
                                     <span className="text-[10px] font-black tracking-widest uppercase opacity-70">Mes 5</span>
-                                    <h4 className="font-black text-sm uppercase mt-1">UI Nativa & Switch-Off</h4>
+                                    <h4 className="font-black text-sm uppercase mt-1">UI Nativa &amp; Switch-Off</h4>
                                 </div>
                                 <div className="p-4 flex-1">
                                     <ul className="text-[10px] space-y-3 font-medium text-slate-600 list-disc pl-3">
                                         <li>Despliegue final del Front-End React/Angular para asesores.</li>
+                                        <li>Migración del proceso BPMN de desistimiento completo.</li>
                                         <li>Migración paralela en ventanas de mantenimiento.</li>
                                         <li>Apagado definitivo (Switch-off) de contrato Imagine CX.</li>
                                     </ul>
